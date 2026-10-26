@@ -8,6 +8,7 @@ import Hero from "@/components/Hero";
 import PriceUp from "@/components/PriceUp";
 import PriceDown from "@/components/PriceDown";
 import Fotter from "@/components/Fotter";
+import AllProducts from "@/components/AllProducts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,15 +33,11 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-screen flex flex-col">
         <Navbar />
-        <Groceries></Groceries>
-        <Marquee></Marquee>
-        <Hero></Hero>
-        <PriceUp></PriceUp>
-        <PriceDown></PriceDown>
-        <Fotter></Fotter>
+       
 
         <main className="">
           {children}
+           <Fotter></Fotter>
         </main>
       </body>
     </html>

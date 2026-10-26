@@ -1,44 +1,51 @@
-
 const Fotter = () => {
   return (
-    <footer className="mt-10 border-t border-gray-200 bg-white">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <footer className="mt-12 border-t border-gray-200 bg-white">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Footer Main Content */}
+        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          {/* Logo and Description */}
+          <div className="max-w-md">
+            <div className="flex items-center gap-2">
+              <span className="text-3xl" aria-hidden="true">
+                🛒
+              </span>
 
-          {/* Left Side */}
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-100 text-2xl">
-              🛒
-            </div>
-
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">
-                বাজার দর
+              <h2 className="text-xl font-extrabold text-gray-900">
+                বাজার <span className="text-green-600">দর</span>
               </h2>
-
-              <p className="mt-1 text-sm text-gray-600">
-                প্রয়োজনীয় পণ্যের দাম এক নজরে।
-              </p>
             </div>
-          </div>
 
-          {/* Right Side */}
-          <div className="flex max-w-md items-start gap-2 rounded-xl bg-amber-50 p-3 sm:max-w-sm">
-            <span className="mt-0.5 text-lg" aria-hidden="true">
-              ⚠️
-            </span>
-
-            <p className="text-sm leading-6 text-gray-600">
-              সকল দাম সম্ভাব্য; বাজার অবস্থার ওপর নির্ভর করে
-              পরিবর্তিত হয়।
+            <p className="mt-3 text-sm leading-6 text-gray-600">
+              প্রয়োজনীয় পণ্যের দাম এক নজরে। প্রতিদিনের বাজারদর জানুন
+              সহজেই এবং সচেতনভাবে আপনার কেনাকাটার পরিকল্পনা করুন।
             </p>
           </div>
 
+          {/* Disclaimer */}
+          <div className="max-w-md rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div className="flex items-start gap-3">
+              <span className="text-xl" aria-hidden="true">
+                ⚠️
+              </span>
+
+              <div>
+                <h3 className="font-bold text-gray-800">
+                  গুরুত্বপূর্ণ তথ্য
+                </h3>
+
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  প্রদর্শিত বাজারদর পরিবর্তনশীল হতে পারে। কেনার আগে
+                  স্থানীয় বাজার থেকে পণ্যের প্রকৃত দাম যাচাই করে নিন।
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Copyright */}
-        <div className="mt-5 border-t border-gray-100 pt-4 text-center text-xs text-gray-500">
-          © {new Date().getFullYear()} বাজার দর। সর্বস্বত্ব সংরক্ষিত।
+        <div className="mt-6 border-t border-gray-100 pt-4 text-center text-xs text-gray-500">
+          © 2026 বাজার দর। সর্বস্বত্ব সংরক্ষিত।
         </div>
       </div>
     </footer>
