@@ -7,6 +7,7 @@ import Marquee from "@/components/Marquee";
 import Hero from "@/components/Hero";
 import PriceUp from "@/components/PriceUp";
 import PriceDown from "@/components/PriceDown";
+import Fotter from "@/components/Fotter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,7 @@ export default function RootLayout({ children }) {
         <Hero></Hero>
         <PriceUp></PriceUp>
         <PriceDown></PriceDown>
+        <Fotter></Fotter>
 
         <main className="">
           {children}
