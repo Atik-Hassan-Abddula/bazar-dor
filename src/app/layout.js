@@ -6,6 +6,7 @@ import Groceries from "@/components/Groceries";
 import Marquee from "@/components/Marquee";
 import Hero from "@/components/Hero";
 import PriceUp from "@/components/PriceUp";
+import PriceDown from "@/components/PriceDown";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,8 +35,9 @@ export default function RootLayout({ children }) {
         <Marquee></Marquee>
         <Hero></Hero>
         <PriceUp></PriceUp>
+        <PriceDown></PriceDown>
 
-        <main className="flex-1">
+        <main className="">
           {children}
         </main>
       </body>

@@ -1,21 +1,27 @@
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
-  experimental: {
-    agentFeedback: true,
-     images: {
+  // Image configuration
+  images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: '**',
-      
+        protocol: "https",
+        hostname: "**",
       },
     ],
   },
+
+  // Experimental features
+  experimental: {
+    agentFeedback: true,
   },
+
+  // Next.js features
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
+
+  // Turbopack configuration
   turbopack: {
     rules: {
       "*.css": {

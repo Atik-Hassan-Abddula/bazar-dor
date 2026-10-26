@@ -1,20 +1,13 @@
 
-import React from "react";
-
 const PriceUp = async () => {
   const res = await fetch(
     "https://api.api-store.workers.dev/api/bazardor/products",
-    {
-      next: { revalidate: 3600 },
-    }
+    { next: { revalidate: 3600 } }
   );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch products");
-  }
+  if (!res.ok) throw new Error("Failed to fetch products");
 
   const data = await res.json();
-
   const products = Array.isArray(data)
     ? data
     : Array.isArray(data.data)
@@ -53,7 +46,6 @@ const PriceUp = async () => {
                   <h3 className="font-bold text-gray-800">
                     {product.nameBn}
                   </h3>
-
                   <p className="mt-1 text-xs text-gray-500">
                     {product.categoryNameBn || "নিত্যপ্রয়োজনীয় পণ্য"}
                   </p>
@@ -72,7 +64,6 @@ const PriceUp = async () => {
                 <p className="text-2xl font-extrabold text-gray-900">
                   ৳{product.today}
                 </p>
-
                 <span className="text-sm text-gray-500">
                   / {product.unit || "kg"}
                 </span>
