@@ -1,95 +1,128 @@
-const PriceDown = async () => {
-  const res = await fetch(
-    "https://api.api-store.workers.dev/api/bazardor/products",
-    { next: { revalidate: 3600 } }
-  );
+
+import Link from "next/link";
+
+const API_URL =
+  "https://api.api-store.workers.dev/api/bazardor/products";
+
+async function getProducts() {
+  const res = await fetch(API_URL, {
+    cache: "no-store",
+  });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch products");
+    throw new Error("পণ্যের তথ্য লোড করা যায়নি");
   }
 
-  const data = await res.json();
+  const result = await res.json();
 
-  const products = Array.isArray(data)
-    ? data
-    : Array.isArray(data.data)
-      ? data.data
-      : [];
+  if (Array.isArray(result)) return result;
+  if (Array.isArray(result.data)) return result.data;
+  if (Array.isArray(result.data?.products)) {
+    return result.data.products;
+  }
+  if (Array.isArray(result.products)) return result.products;
 
-  const priceDownProducts = products.filter(
+  return [];
+}
+
+function formatPrice(price) {
+  if (price === null || price === undefined || price === "") {
+    return "দাম পাওয়া যায়নি";
+  }
+
+  return `৳${Number(price).toLocaleString("en-BD")}`;
+}
+
+export default async function PriceDown() {
+  const products = await getProducts();
+
+  const reducedProducts = products.filter(
     (product) => product.change?.dir === "down"
   );
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-8">
-      <div className="mb-5 flex min-h-10 items-center justify-between gap-3">
+    <section>
+      <div className="mb-6">
         <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-          🔻 যেসব পণ্যের দাম কমেছে
+          দাম কমেছে
         </h2>
-{/* 
-        <span className="shrink-0 rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-600">
-          {priceDownProducts.length} টি পণ্য
-        </span> */}
+        <p className="mt-1 text-sm text-gray-500">
+          আগের তুলনায় যেসব পণ্যের দাম কমেছে
+        </p>
       </div>
 
-      <div className="grid w-full grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {priceDownProducts.slice(0,6).map((product) => (
-          <article
-            key={product.id}
-            className="flex h-[240px] w-full min-w-0 flex-col rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
-          >
-            <div className="flex min-h-0 flex-1 items-start justify-between gap-3">
-              <div className="flex min-w-0 items-start gap-3">
-                <span className="shrink-0 text-3xl">
-                  {product.image || product.categoryIcon || "🛒"}
-                </span>
+      {reducedProducts.length === 0 ? (
+        <p className="border border-gray-200 p-6 text-center text-gray-500">
+          দাম কমেছে এমন কোনো পণ্য পাওয়া যায়নি।
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {reducedProducts.map((product) => {
+            const productId = product.slug ?? product.id;
 
-                <div className="min-w-0">
-                  <h3 className="line-clamp-2 break-words font-bold text-gray-800">
-                    {product.nameBn}
-                  </h3>
+            return (
+              <Link
+                key={product.id ?? product.slug}
+                href={`/products/${encodeURIComponent(String(productId))}`}
+                className="group block border border-gray-200 p-4 transition hover:border-green-600"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden text-3xl">
+                    {typeof product.image === "string" &&
+                    /^https?:\/\//.test(product.image) ? (
+                      <img
+                        src={product.image}
+                        alt={product.nameBn ?? product.name ?? "পণ্য"}
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      product.image || product.categoryIcon || "🛒"
+                    )}
+                  </div>
 
-                  <p className="mt-1 line-clamp-2 text-xs text-gray-500">
-                    {product.categoryNameBn || "নিত্যপ্রয়োজনীয় পণ্য"}
-                  </p>
+                  <span className="border border-green-200 px-2 py-1 text-sm font-semibold text-green-700">
+                    ↓ {product.change?.pct ?? 0}%
+                  </span>
                 </div>
-              </div>
 
-              <span className="shrink-0 rounded-lg bg-green-50 px-2.5 py-1.5 text-sm font-bold text-green-600">
-                ▼ {product.change?.pct ?? 0}%
-              </span>
-            </div>
+                <h3 className="mt-4 font-semibold text-gray-900 group-hover:text-green-700">
+                  {product.nameBn ?? product.name ?? "পণ্য"}
+                </h3>
 
-            <div className="mt-auto shrink-0 border-t border-gray-100 pt-3">
-              <p className="text-sm text-gray-500">
-                আজকের বাজারদর
-              </p>
-
-              <div className="mt-1 flex items-baseline gap-3">
-                <p className="text-2xl font-extrabold text-gray-900">
-                  ৳{product.today}
+                <p className="mt-1 text-sm text-gray-500">
+                  {product.categoryNameBn ?? product.category ?? "অন্যান্য"}
                 </p>
 
-                <span className="text-sm text-gray-500">
-                  / {product.unit || "kg"}
-                </span>
-              </div>
+                <div className="mt-4 space-y-2 border-t border-gray-200 pt-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-gray-500">
+                      আজকের দাম
+                    </span>
+                    <span className="font-bold text-gray-900">
+                      {formatPrice(product.today)}
+                      {product.unit ? ` / ${product.unit}` : ""}
+                    </span>
+                  </div>
 
-              <p className="mt-2 text-sm text-gray-500">
-                গতকাল: ৳{product.yesterday ?? "—"}
-              </p>
-            </div>
-          </article>
-        ))}
-      </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm text-gray-500">
+                      গতকালের দাম
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      {formatPrice(product.yesterday)}
+                    </span>
+                  </div>
+                </div>
 
-      {priceDownProducts.length === 0 && (
-        <p className="rounded-xl bg-gray-50 py-8 text-center text-gray-500">
-          বর্তমানে দাম কমেছে এমন কোনো পণ্য পাওয়া যায়নি।
-        </p>
+                <div className="mt-4 flex items-center justify-between text-sm font-medium text-green-700">
+                  <span>বিস্তারিত দেখুন</span>
+                  <span aria-hidden="true">→</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
       )}
     </section>
   );
-};
-
-export default PriceDown;
+}
