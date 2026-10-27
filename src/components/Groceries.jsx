@@ -12,6 +12,7 @@ const categoryNames = {
   "মাংস": "Meat",
   "গরুর মাংস": "Beef",
   "খাসির মাংস": "Mutton",
+  "ডিম-দুধ": "Eggs & Milk",
   "মুরগি": "Chicken",
   "চাল": "Rice",
   "ডাল": "Lentils",
