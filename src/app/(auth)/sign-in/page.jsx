@@ -4,19 +4,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
 
     setLoading(true);
-    setErrorMessage("");
-    setSuccessMessage("");
 
     try {
       const form = e.currentTarget;
@@ -28,24 +25,25 @@ export default function SignInPage() {
           email: data.email,
           password: data.password,
           rememberMe: data.remember === "on",
-          callbackURL:'/'
+          callbackURL: "/",
         });
 
       if (error) {
-        setErrorMessage(
+        toast.error(
           error.message || "Sign in failed. Please try again."
         );
         return;
       }
 
-      setSuccessMessage("Sign in successful!");
+      toast.success("Sign in successful!");
+
       console.log("Sign In Successful:", resData);
 
       window.location.href = "/";
     } catch (error) {
       console.error("Sign In Error:", error);
 
-      setErrorMessage(
+      toast.error(
         error instanceof Error
           ? error.message
           : "Something went wrong. Please try again."
@@ -84,27 +82,9 @@ export default function SignInPage() {
             </h1>
 
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              আপনার অ্যাকাউন্টে প্রবেশ করুন এবং বাজারদর দেখুন।
+              Sign in to your account and explore daily market prices.
             </p>
           </div>
-
-          {errorMessage && (
-            <p
-              role="alert"
-              className="mb-5 rounded-xl bg-red-50 p-3 text-sm text-red-700"
-            >
-              {errorMessage}
-            </p>
-          )}
-
-          {successMessage && (
-            <p
-              role="status"
-              className="mb-5 rounded-xl bg-green-50 p-3 text-sm text-green-700"
-            >
-              {successMessage}
-            </p>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>

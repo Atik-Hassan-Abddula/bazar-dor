@@ -1,14 +1,12 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+
 import Navbar from "@/components/Navbar";
-import Groceries from "@/components/Groceries";
-import Marquee from "@/components/Marquee";
-import Hero from "@/components/Hero";
-import PriceUp from "@/components/PriceUp";
-import PriceDown from "@/components/PriceDown";
 import Fotter from "@/components/Fotter";
-import AllProducts from "@/components/AllProducts";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,14 +29,22 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-screen flex flex-col">
+      <body className="flex min-h-screen flex-col">
         <Navbar />
-       
 
-        <main className="">
+        <main className="flex-1">
           {children}
-           <Fotter></Fotter>
         </main>
+
+        <Fotter />
+
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          theme="light"
+          closeOnClick
+          pauseOnHover
+        />
       </body>
     </html>
   );

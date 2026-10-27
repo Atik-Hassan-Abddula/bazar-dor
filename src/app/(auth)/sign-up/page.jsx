@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -21,7 +22,6 @@ export default function SignUpPage() {
     try {
       const form = e.currentTarget;
       const formData = new FormData(form);
-
       const data = Object.fromEntries(formData.entries());
 
       const { data: resData, error } =
@@ -32,13 +32,19 @@ export default function SignUpPage() {
         });
 
       if (error) {
-        setErrorMessage(
-          error.message || "Account creation failed."
-        );
+        const message =
+          error.message || "Account creation failed.";
+
+        setErrorMessage(message);
+        toast.error(message);
         return;
       }
 
-      setSuccessMessage("Account created successfully!");
+      const message = "Account created successfully!";
+
+      setSuccessMessage(message);
+      toast.success(message);
+
       console.log("Sign Up Successful:", resData);
 
       form.reset();
@@ -46,11 +52,13 @@ export default function SignUpPage() {
     } catch (error) {
       console.error("Sign Up Error:", error);
 
-      setErrorMessage(
+      const message =
         error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again."
-      );
+          : "Something went wrong. Please try again.";
+
+      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -83,7 +91,7 @@ export default function SignUpPage() {
             </h1>
 
             <p className="mt-2 text-sm leading-6 text-gray-500">
-              নতুন অ্যাকাউন্ট তৈরি করে বাজারদর সম্পর্কে জানুন।
+              Create a new account to discover daily market prices.
             </p>
           </div>
 

@@ -3,22 +3,45 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "react-toastify";
 
 export default function AuthButton() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
+  const [loading, setLoading] = useState(false);
 
   async function handleSignOut() {
-    const { error } = await authClient.signOut();
+    if (loading) return;
 
-    if (error) {
-      console.error("Sign Out Error:", error.message);
-      return;
+    setLoading(true);
+
+    try {
+      const { error } = await authClient.signOut();
+
+      if (error) {
+        toast.error(
+          error.message || "Sign out failed. Please try again."
+        );
+        return;
+      }
+
+      toast.success("Signed out successfully!");
+
+      router.replace("/sign-in");
+      router.refresh();
+    } catch (error) {
+      console.error("Sign Out Error:", error);
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-
-    router.replace("/sign-in");
-    router.refresh();
   }
 
   if (isPending) {
@@ -37,9 +60,10 @@ export default function AuthButton() {
         <button
           type="button"
           onClick={handleSignOut}
-          className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white transition hover:bg-red-700"
+          disabled={loading}
+          className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Sign Out
+          {loading ? "Signing out..." : "Sign Out"}
         </button>
       </div>
     );
