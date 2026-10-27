@@ -1,4 +1,3 @@
-
 import MarqueeText from "react-marquee-text";
 import "react-marquee-text/dist/styles.css";
 
@@ -33,18 +32,18 @@ const Marquee = async () => {
               return (
                 <div
                   key={product.id}
-                  className="flex shrink-0 items-center gap-2 border-r  px-5 py-2 text-sm"
+                  className="flex shrink-0 items-center gap-2 border-r px-5 py-2 text-sm"
                 >
                   <span className="text-base">
                     {product.image || product.categoryIcon || "🛒"}
                   </span>
 
                   <span className="whitespace-nowrap font-medium text-gray-800">
-                    {product.nameBn}
+                    {product.name}
                   </span>
 
                   <span className="whitespace-nowrap text-gray-700">
-                    {product.today} টাকা/কেজি
+                    {product.today} BDT/kg
                   </span>
 
                   <span

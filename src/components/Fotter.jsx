@@ -1,3 +1,4 @@
+
 const Fotter = () => {
   return (
     <footer className="mt-12 border-t border-gray-200 bg-white">
@@ -12,13 +13,13 @@ const Fotter = () => {
               </span>
 
               <h2 className="text-xl font-extrabold text-gray-900">
-                বাজার <span className="text-green-600">দর</span>
+                Bazar <span className="text-green-600">Dor</span>
               </h2>
             </div>
 
             <p className="mt-3 text-sm leading-6 text-gray-600">
-              প্রয়োজনীয় পণ্যের দাম এক নজরে। প্রতিদিনের বাজারদর জানুন
-              সহজেই এবং সচেতনভাবে আপনার কেনাকাটার পরিকল্পনা করুন।
+              Essential product prices at a glance. Check daily market prices
+              easily and plan your shopping wisely.
             </p>
           </div>
 
@@ -31,12 +32,12 @@ const Fotter = () => {
 
               <div>
                 <h3 className="font-bold text-gray-800">
-                  গুরুত্বপূর্ণ তথ্য
+                  Important Information
                 </h3>
 
                 <p className="mt-1 text-sm leading-6 text-gray-600">
-                  প্রদর্শিত বাজারদর পরিবর্তনশীল হতে পারে। কেনার আগে
-                  স্থানীয় বাজার থেকে পণ্যের প্রকৃত দাম যাচাই করে নিন।
+                  Market prices may change over time. Please verify the actual
+                  product prices at your local market before purchasing.
                 </p>
               </div>
             </div>
@@ -45,7 +46,7 @@ const Fotter = () => {
 
         {/* Copyright */}
         <div className="mt-6 border-t border-gray-100 pt-4 text-center text-xs text-gray-500">
-          © 2026 বাজার দর। সর্বস্বত্ব সংরক্ষিত।
+          © 2026 Bazar Dor. All rights reserved.
         </div>
       </div>
     </footer>

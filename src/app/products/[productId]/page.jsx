@@ -5,6 +5,167 @@ import { Suspense } from "react";
 const API_URL =
   "https://api.api-store.workers.dev/api/bazardor/products";
 
+const englishNames = {
+  "স্বর্ণমাছি চাল": "Swarna Machi Rice",
+  "মিনিকেট চাল": "Miniket Rice",
+  "নাজির চাল": "Nazir Rice",
+  "বাটাম সাইজ চাল": "Batam Size Rice",
+  "আমন ডাল (খোসাসিলা)": "Aman Lentils (Peeled)",
+  "মসুর ডাল": "Red Lentils",
+  "মুগ ডাল": "Mung Beans",
+  "ছোলা": "Chickpeas",
+  "পাম তেল": "Palm Oil",
+  "সরিষার তেল": "Mustard Oil",
+  "ঘানি ভাঙা সরিষার তেল": "Cold-Pressed Mustard Oil",
+  "কাঁচামরিচ": "Green Chili",
+  "কাঁচা মরিচ": "Green Chili",
+  "মাখন (১০০ গ্রাম)": "Butter (100g)",
+  "মাখন (100 গ্রাম)": "Butter (100g)",
+  "পেঁয়াজ": "Onion",
+  "পেঁয়াজ": "Onion",
+  "আলু": "Potato",
+  "রসুন": "Garlic",
+  "আদা": "Ginger",
+  "টমেটো": "Tomato",
+  "বেগুন": "Eggplant",
+  "মরিচ": "Chili",
+  "মরিচ গুঁড়া": "Chili Powder",
+  "ধনেপাতা গুঁড়া": "Coriander Leaf Powder",
+  "শসা": "Cucumber",
+  "গাজর": "Carrot",
+  "ফুলকপি": "Cauliflower",
+  "বাঁধাকপি": "Cabbage",
+  "লাউ": "Bottle Gourd",
+  "মিষ্টি কুমড়া": "Pumpkin",
+  "পালং শাক": "Spinach",
+  "লাল শাক": "Red Amaranth",
+  "ঢেঁড়স": "Okra",
+  "করলা": "Bitter Gourd",
+  "পটল": "Pointed Gourd",
+  "বরবটি": "Yardlong Beans",
+  "লেবু": "Lemon",
+  "কলা": "Banana",
+  "আপেল": "Apple",
+  "কমলা": "Orange",
+  "আম": "Mango",
+  "পেঁপে": "Papaya",
+  "আনারস": "Pineapple",
+  "তরমুজ": "Watermelon",
+  "পেয়ারা": "Guava",
+  "গরুর মাংস": "Beef",
+  "খাসির মাংস": "Mutton",
+  "মুরগির মাংস": "Chicken",
+  "মুরগি": "Chicken",
+  "সোনালি মুরগি": "Sonali Chicken",
+  "ব্রয়লার মুরগি": "Broiler Chicken",
+  "হাঁসের মাংস": "Duck Meat",
+  "দেশি হাঁসের মাংস": "Local Duck Meat",
+  "হাঁস": "Duck",
+  "রুই মাছ": "Rohu Fish",
+  "কাতলা মাছ": "Catla Fish",
+  "ইলিশ মাছ": "Hilsa Fish",
+  "তেলাপিয়া": "Tilapia",
+  "তেলাপিয়া মাছ": "Tilapia Fish",
+  "পাঙ্গাস মাছ": "Pangasius Fish",
+  "চিংড়ি": "Shrimp",
+  "চিংড়ি মাছ (খোলা)": "Loose Shrimp",
+  "ডিম": "Eggs",
+  "দুধ": "Milk",
+  "দই": "Yogurt",
+  "সয়াবিন তেল": "Soybean Oil",
+  "লবণ": "Salt",
+  "চিনি": "Sugar",
+  "আটা": "Wheat Flour",
+  "ময়দা": "All-Purpose Flour",
+  "হলুদ": "Turmeric",
+  "জিরা": "Cumin",
+  "ধনিয়া": "Coriander",
+};
+
+const englishCategories = {
+  chal: "Rice",
+  dal: "Lentils",
+  tel: "Oil",
+  sobji: "Vegetables",
+  mach: "Fish",
+  mangsho: "Meat",
+  "dim-dui": "Eggs & Dairy",
+  mosla: "Spices",
+  "ডিম-দুধ": "Eggs & Dairy",
+  "চাল": "Rice",
+  "ডাল": "Lentils",
+  "তেল": "Oil",
+  "সবজি": "Vegetables",
+  "শাকসবজি": "Vegetables",
+  "মাছ": "Fish",
+  "মাংস": "Meat",
+  "মসলা": "Spices",
+  "ফল": "Fruits",
+  "ফলমূল": "Fruits",
+  "মুদি": "Groceries",
+  "পানীয়": "Beverages",
+  "বেকারি": "Bakery",
+  "স্ন্যাকস": "Snacks",
+  "হিমায়িত খাবার": "Frozen Food",
+};
+
+const englishMarkets = {
+  "কারওয়ান বাজার": "Karwan Bazar",
+  "গ্রীন মার্কেট, মিরপুর": "Green Market, Mirpur",
+  "চৌদগ্রাম বাজার": "Chauddagram Bazar",
+  "আমতলী বাজার": "Amtali Bazar",
+  "সদর বাজার": "Sadar Bazar",
+  "বাসারহাট বাজার": "Basarhat Bazar",
+  "মাঠ বাজার": "Math Bazar",
+  "চৌর বাজার": "Chour Bazar",
+  "বাজারহাট": "Bazarhat",
+  "ডবলগেট বাজার": "Double Gate Bazar",
+  "আমবাজার": "Am Bazar",
+  "চৌরাস্তা বাজার": "Chourasta Bazar",
+};
+
+const englishDivisions = {
+  "ঢাকা": "Dhaka",
+  "চট্টগ্রাম": "Chattogram",
+  "রাজশাহী": "Rajshahi",
+  "ময়মনসিংহ": "Mymensingh",
+  "খুলনা": "Khulna",
+  "সিলেট": "Sylhet",
+  "বরিশাল": "Barishal",
+  "রংপুর": "Rangpur",
+};
+
+function translateName(name) {
+  if (typeof name !== "string" || !name.trim()) {
+    return "Product";
+  }
+
+  const normalizedName = name.trim().replace(/\s+/g, " ");
+
+  return englishNames[normalizedName] || normalizedName;
+}
+
+function translateCategory(category, categoryName) {
+  const value =
+    typeof categoryName === "string" && categoryName.trim()
+      ? categoryName.trim()
+      : typeof category === "string"
+        ? category.trim()
+        : "";
+
+  return englishCategories[category] ||
+    englishCategories[value] ||
+    translateName(value || "Product");
+}
+
+function translateMarket(market) {
+  return englishMarkets[market] || market || "Market";
+}
+
+function translateDivision(division) {
+  return englishDivisions[division] || division || "—";
+}
+
 async function getProduct(productId) {
   try {
     const response = await fetch(API_URL, {
@@ -91,7 +252,7 @@ function LoadingProduct() {
         />
 
         <p className="mt-4 text-sm text-gray-500">
-          পণ্যের তথ্য লোড হচ্ছে...
+          Loading product information...
         </p>
       </div>
     </main>
@@ -105,18 +266,18 @@ function NotFoundProduct() {
         <p className="text-6xl">🔎</p>
 
         <h1 className="mt-5 text-2xl font-bold">
-          পণ্যটি খুঁজে পাওয়া যায়নি
+          Product Not Found
         </h1>
 
         <p className="mt-3 text-sm text-gray-500">
-          পণ্যের লিংকটি সঠিক কি না পরীক্ষা করে আবার চেষ্টা করুন।
+          Please check the product URL and try again.
         </p>
 
         <Link
           href="/"
           className="mt-6 inline-flex rounded-lg border border-gray-300 px-5 py-3 font-semibold transition hover:border-lime-600"
         >
-          ← হোম পেজে ফিরে যান
+          ← Back to Home
         </Link>
       </div>
     </main>
@@ -131,13 +292,21 @@ async function ProductContent({ params }) {
     return <NotFoundProduct />;
   }
 
-  const productName = product.nameBn || product.name || "পণ্য";
+  const productName = translateName(
+    product.name ?? product.nameBn ?? product.title ?? product.titleBn
+  );
+
+  const categoryName = translateCategory(
+    product.category,
+    product.categoryName ?? product.categoryNameBn
+  );
 
   const markets = Array.isArray(product.markets)
     ? product.markets
     : [];
 
   const rawChange = product.change?.pct;
+
   const hasChange =
     rawChange !== null &&
     rawChange !== undefined &&
@@ -161,31 +330,31 @@ async function ProductContent({ params }) {
       : "text-gray-500";
 
   const changeLabel = isUp
-    ? "দাম বেড়েছে"
+    ? "Price Increased"
     : isDown
-      ? "দাম কমেছে"
-      : "দামের পরিবর্তন";
+      ? "Price Decreased"
+      : "No Price Change";
 
   const history = [
     {
-      title: "আজকের দাম",
+      title: "Today's Price",
       price: product.today,
-      description: "বর্তমান বাজারদর",
+      description: "Current market price",
     },
     {
-      title: "গতকালের দাম",
+      title: "Yesterday's Price",
       price: product.yesterday,
-      description: "গত দিনের বাজারদর",
+      description: "Previous day's market price",
     },
     {
-      title: "গত সপ্তাহের দাম",
+      title: "Last Week's Price",
       price: product.lastWeek,
-      description: "এক সপ্তাহ আগের দাম",
+      description: "Price one week ago",
     },
     {
-      title: "গত মাসের দাম",
+      title: "Last Month's Price",
       price: product.lastMonth,
-      description: "এক মাস আগের দাম",
+      description: "Price one month ago",
     },
   ];
 
@@ -195,14 +364,12 @@ async function ProductContent({ params }) {
         {/* Breadcrumb */}
         <nav className="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-500">
           <Link href="/" className="transition hover:text-lime-700">
-            হোম
+            Home
           </Link>
 
           <span>/</span>
 
-          <span>
-            {product.categoryNameBn || product.category || "পণ্য"}
-          </span>
+          <span>{categoryName}</span>
 
           <span>/</span>
 
@@ -216,12 +383,11 @@ async function ProductContent({ params }) {
           <div>
             <div className="mb-5 flex flex-wrap items-center gap-3">
               <span className="rounded-full border border-gray-300 px-3 py-2 text-sm">
-                {product.categoryIcon || "🛒"}{" "}
-                {product.categoryNameBn || product.category || "পণ্য"}
+                {product.categoryIcon || "🛒"} {categoryName}
               </span>
 
               <span className="text-sm font-medium text-green-700">
-                ● বাজারদরের তথ্য
+                ● Market Price Information
               </span>
             </div>
 
@@ -230,19 +396,21 @@ async function ProductContent({ params }) {
             </h1>
 
             <p className="mt-4 max-w-xl text-sm leading-7 text-gray-500 sm:text-base">
-              এই পণ্যের বর্তমান বাজারদর, আগের দামের ইতিহাস এবং
-              বিভিন্ন বাজারের দামের তুলনা দেখুন।
+              Explore the current market price, historical prices, and
+              price comparisons across different markets.
             </p>
 
             <div className="mt-8">
-              <p className="text-sm text-gray-500">আজকের বাজারদর</p>
+              <p className="text-sm text-gray-500">
+                Today's Market Price
+              </p>
 
               <p className="mt-2 text-4xl font-extrabold sm:text-5xl">
                 {formatPrice(product.today)}
               </p>
 
               <p className="mt-2 text-sm text-gray-500">
-                প্রতি {product.unit || "ইউনিট"}
+                Per {product.unit || "unit"}
               </p>
 
               <p className={`mt-4 font-semibold ${changeColor}`}>
@@ -262,14 +430,14 @@ async function ProductContent({ params }) {
                 href="#price-history"
                 className="rounded-lg border border-gray-300 px-5 py-3 text-sm font-semibold transition hover:border-lime-600"
               >
-                দামের ইতিহাস ↓
+                Price History ↓
               </a>
 
               <a
                 href="#market-comparison"
                 className="rounded-lg border border-gray-300 px-5 py-3 text-sm font-semibold transition hover:border-lime-600"
               >
-                বাজারের তুলনা
+                Compare Markets
               </a>
             </div>
           </div>
@@ -298,10 +466,10 @@ async function ProductContent({ params }) {
 
         {/* Price History */}
         <section id="price-history" className="scroll-mt-8 py-10">
-          <h2 className="text-2xl font-bold">দামের ইতিহাস</h2>
+          <h2 className="text-2xl font-bold">Price History</h2>
 
           <p className="mt-2 text-sm text-gray-500">
-            বিভিন্ন সময়ের বাজারদর তুলনা করুন।
+            Compare market prices across different time periods.
           </p>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -318,12 +486,12 @@ async function ProductContent({ params }) {
 
         {/* Price Change */}
         <section className="border-y border-gray-300 py-8">
-          <h2 className="text-2xl font-bold">দামের পরিবর্তন</h2>
+          <h2 className="text-2xl font-bold">Price Changes</h2>
 
           <div className="mt-6 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-500">
-                পরিবর্তনের অবস্থা
+                Price Trend
               </p>
 
               <p className={`mt-2 text-xl font-bold ${changeColor}`}>
@@ -333,7 +501,7 @@ async function ProductContent({ params }) {
 
             <div className="sm:text-right">
               <p className="text-sm text-gray-500">
-                শতকরা পরিবর্তন
+                Percentage Change
               </p>
 
               <p className={`mt-2 text-3xl font-extrabold ${changeColor}`}>
@@ -346,113 +514,132 @@ async function ProductContent({ params }) {
         </section>
 
         {/* Market Comparison */}
-    
-{/* Market Comparison */}
-<section
-  id="market-comparison"
-  className="scroll-mt-8 py-10 text-gray-900"
->
-  <h2 className="text-2xl font-bold">
-    বাজারভিত্তিক দামের তুলনা
-  </h2>
+        <section
+          id="market-comparison"
+          className="scroll-mt-8 py-10 text-gray-900"
+        >
+          <h2 className="text-2xl font-bold">
+            Market Price Comparison
+          </h2>
 
-  <p className="mt-2 text-sm text-gray-500">
-    বিভিন্ন বাজারের সর্বনিম্ন, সর্বাধিক ও গড় দাম দেখুন।
-  </p>
+          <p className="mt-2 text-sm text-gray-500">
+            Compare the minimum, maximum, and average prices across markets.
+          </p>
 
-  {markets.length > 0 ? (
-    <div className="mt-6 overflow-x-auto rounded-xl border border-gray-300">
-      <table className="w-full min-w-[700px] text-left text-sm">
-        <thead>
-          <tr className="border-b border-gray-300 text-gray-500">
-            <th className="px-5 py-4 font-semibold">বাজার</th>
-            <th className="px-5 py-4 font-semibold">বিভাগ</th>
-            <th className="px-5 py-4 font-semibold">সর্বনিম্ন</th>
-            <th className="px-5 py-4 font-semibold">সর্বাধিক</th>
-            <th className="px-5 py-4 font-semibold">গড়</th>
-          </tr>
-        </thead>
+          {markets.length > 0 ? (
+            <div className="mt-6 overflow-x-auto rounded-xl border border-gray-300">
+              <table className="w-full min-w-[700px] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-gray-300 text-gray-500">
+                    <th className="px-5 py-4 font-semibold">Market</th>
+                    <th className="px-5 py-4 font-semibold">Division</th>
+                    <th className="px-5 py-4 font-semibold">Minimum</th>
+                    <th className="px-5 py-4 font-semibold">Maximum</th>
+                    <th className="px-5 py-4 font-semibold">Average</th>
+                  </tr>
+                </thead>
 
-        <tbody>
-          {markets.map((market, index) => {
-            const min = Number(
-              getMarketPrice(market, ["min", "minPrice", "priceMin"])
-            );
+                <tbody>
+                  {markets.map((market, index) => {
+                    const minValue = getMarketPrice(market, [
+                      "min",
+                      "minPrice",
+                      "priceMin",
+                    ]);
 
-            const max = Number(
-              getMarketPrice(market, ["max", "maxPrice", "priceMax"])
-            );
+                    const maxValue = getMarketPrice(market, [
+                      "max",
+                      "maxPrice",
+                      "priceMax",
+                    ]);
 
-            const hasMin = Number.isFinite(min);
-            const hasMax = Number.isFinite(max);
+                    const min =
+                      minValue !== null ? Number(minValue) : NaN;
 
-            const average =
-              hasMin && hasMax ? (min + max) / 2 : null;
+                    const max =
+                      maxValue !== null ? Number(maxValue) : NaN;
 
-            return (
-              <tr
-                key={market.id || market.name || market.nameBn || index}
-                className="border-b border-gray-200 last:border-0"
-              >
-                <td className="px-5 py-4 font-medium">
-                  {market.nameBn ||
-                    market.name ||
-                    market.marketName ||
-                    `বাজার ${index + 1}`}
-                </td>
+                    const hasMin = Number.isFinite(min);
+                    const hasMax = Number.isFinite(max);
 
-                <td className="px-5 py-4 text-gray-600">
-                  {market.division ||
-                    market.divisionNameBn ||
-                    market.divisionBn ||
-                    market.city ||
-                    "—"}
-                </td>
+                    const average =
+                      hasMin && hasMax ? (min + max) / 2 : null;
 
-                <td className="px-5 py-4 font-semibold text-green-700">
-                  {hasMin ? formatPrice(min) : "—"}
-                </td>
+                    const marketName = translateMarket(
+                      market.market ??
+                        market.nameBn ??
+                        market.name ??
+                        market.marketName
+                    );
 
-                <td className="px-5 py-4 font-semibold text-red-600">
-                  {hasMax ? formatPrice(max) : "—"}
-                </td>
+                    const divisionName = translateDivision(
+                      market.division ??
+                        market.divisionNameBn ??
+                        market.divisionBn ??
+                        market.city
+                    );
 
-                <td className="px-5 py-4 font-semibold">
-                  {average !== null
-                    ? formatPrice(Number(average.toFixed(2)))
-                    : "—"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  ) : (
-    <div className="mt-6 rounded-xl border border-dashed border-gray-300 px-5 py-10 text-center">
-      <p className="text-4xl">🏪</p>
+                    return (
+                      <tr
+                        key={
+                          market.id ||
+                          market.market ||
+                          market.name ||
+                          index
+                        }
+                        className="border-b border-gray-200 last:border-0"
+                      >
+                        <td className="px-5 py-4 font-medium">
+                          {marketName}
+                        </td>
 
-      <h3 className="mt-4 font-bold">
-        বাজারের তথ্য পাওয়া যায়নি
-      </h3>
+                        <td className="px-5 py-4 text-gray-600">
+                          {divisionName}
+                        </td>
 
-      <p className="mt-2 text-sm text-gray-500">
-        এই পণ্যের API-তে বাজারভিত্তিক তথ্য নেই।
-      </p>
-    </div>
-  )}
-</section>
+                        <td className="px-5 py-4 font-semibold text-green-700">
+                          {hasMin ? formatPrice(min) : "—"}
+                        </td>
 
+                        <td className="px-5 py-4 font-semibold text-red-600">
+                          {hasMax ? formatPrice(max) : "—"}
+                        </td>
+
+                        <td className="px-5 py-4 font-semibold">
+                          {average !== null
+                            ? formatPrice(Number(average.toFixed(2)))
+                            : "—"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="mt-6 rounded-xl border border-dashed border-gray-300 px-5 py-10 text-center">
+              <p className="text-4xl">🏪</p>
+
+              <h3 className="mt-4 font-bold">
+                No Market Data Available
+              </h3>
+
+              <p className="mt-2 text-sm text-gray-500">
+                Market-specific information is not available for this product.
+              </p>
+            </div>
+          )}
+        </section>
 
         {/* Footer */}
         <section className="flex flex-col gap-4 border-t border-gray-300 py-8 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-lg font-bold">
-              আরও পণ্যের দাম দেখতে চান?
+              Want to explore more products?
             </h2>
 
             <p className="mt-2 text-sm text-gray-500">
-              সব পণ্যের তালিকা দেখতে হোম পেজে ফিরে যান।
+              Return to the home page to browse all products.
             </p>
           </div>
 
@@ -460,7 +647,7 @@ async function ProductContent({ params }) {
             href="/"
             className="inline-flex w-fit rounded-lg border border-gray-300 px-5 py-3 text-sm font-semibold transition hover:border-lime-600"
           >
-            ← সব পণ্য দেখুন
+            ← View All Products
           </Link>
         </section>
       </div>

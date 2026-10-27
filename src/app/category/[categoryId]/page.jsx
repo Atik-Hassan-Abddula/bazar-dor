@@ -5,13 +5,36 @@ import ProductSorting from "@/components/ProductSorting";
 
 const BASE_URL = "https://api.api-store.workers.dev/api/bazardor";
 
+const categoryTranslations = {
+  "শাকসবজি": "Vegetables",
+  "সবজি": "Vegetables",
+  "মাছ": "Fish",
+  "মাংস": "Meat",
+  "ফল": "Fruits",
+  "ফলমূল": "Fruits",
+  "চাল": "Rice",
+  "ডাল": "Lentils",
+  "তেল": "Oil",
+  "মসলা": "Spices",
+  "মুদি": "Groceries",
+  "পানীয়": "Beverages",
+  "বেকারি": "Bakery",
+  "স্ন্যাকস": "Snacks",
+  "হিমায়িত খাবার": "Frozen Food",
+};
+
+function translateCategoryName(value) {
+  const name = String(value ?? "").trim();
+  return categoryTranslations[name] ?? name;
+}
+
 export default function CategoryPage({ params }) {
   return (
     <Suspense
       fallback={
         <main className="mx-auto max-w-7xl p-6">
           <p className="animate-pulse text-gray-500">
-            ক্যাটাগরি লোড হচ্ছে...
+            Loading category...
           </p>
         </main>
       }
@@ -67,11 +90,16 @@ async function CategoryContent({ params }) {
     apiError = true;
   }
 
-  const categoryName =
-    category?.nameBn ??
+  const rawCategoryName =
+    category?.nameEn ??
     category?.name ??
+    category?.nameBn ??
+    products[0]?.categoryNameEn ??
+    products[0]?.categoryName ??
     products[0]?.categoryNameBn ??
     categoryId;
+
+  const categoryName = translateCategoryName(rawCategoryName);
 
   const categoryIcon =
     category?.icon ??
@@ -85,7 +113,7 @@ async function CategoryContent({ params }) {
         href="/"
         className="mb-6 inline-flex font-semibold text-green-700 hover:underline"
       >
-        ← হোম পেজে ফিরে যান
+        ← Back to Home
       </Link>
 
       <section className="mb-8 rounded-2xl bg-green-50 p-6">
@@ -98,26 +126,26 @@ async function CategoryContent({ params }) {
         </h1>
 
         <p className="mt-2 text-sm text-gray-600">
-          মোট পণ্য: {products.length}
+          Total Products: {products.length}
         </p>
       </section>
 
       {apiError ? (
         <section className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
           <p className="font-semibold text-red-700">
-            API থেকে ডেটা লোড করা যায়নি।
+            Failed to load category products.
           </p>
 
           <p className="mt-2 text-sm text-gray-600">
-            ইন্টারনেট সংযোগ এবং API endpoint পরীক্ষা করো।
+            Please check your internet connection and API endpoint.
           </p>
 
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+          <Link
+            href="/"
+            className="mt-4 inline-block rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
           >
-            আবার চেষ্টা করো
-          </button>
+            Back to Home
+          </Link>
         </section>
       ) : (
         <ProductSorting products={products} />

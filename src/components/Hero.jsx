@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 
 const API_URL =
@@ -25,38 +26,37 @@ const Hero = async () => {
       <div className="flex min-h-[190px] flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-[#f8fcf9] px-5 py-5 sm:flex-row sm:items-center sm:px-8">
         <div className="max-w-2xl">
           <p className="mb-2 text-xs font-semibold text-green-700">
-            BazarDor • প্রতিদিনের বাজারদর
+            BazarDor • Daily Market Prices
           </p>
 
           <h1 className="text-xl font-extrabold text-gray-900 sm:text-2xl md:text-3xl">
-            আজকের বাজারের দাম এক নজরে
+            Today's Market Prices at a Glance
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-gray-500">
-            চাল, ডাল, তেল, সবজি, মাছ ও মাংসের সর্বশেষ বাজারদর
-            জানুন এক জায়গায়। সঠিক দামে কেনাকাটার সিদ্ধান্ত নিন।
+            Discover the latest prices of rice, lentils, oil,
+            vegetables, fish, and meat in one place. Make
+            informed shopping decisions at the right prices.
           </p>
 
           <p className="mt-2 text-xs text-green-700">
-            মোট {products.length}টি পণ্যের তথ্য পাওয়া গেছে
+            Information available for {products.length} products
           </p>
 
           <a
             href="#products"
             className="mt-4 inline-flex rounded-md bg-green-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800"
           >
-            সব দাম দেখুন
+            View All Prices
           </a>
         </div>
 
         <div className="mt-4 flex justify-center sm:ml-6 sm:mt-0">
           <Image
-          src={'/bazar-hero.png'}
-          width={300}
-          height={100}
-          alt=""
-          
-          
+            src="/bazar-hero.png"
+            width={300}
+            height={100}
+            alt="BazarDor Market"
           />
         </div>
       </div>
