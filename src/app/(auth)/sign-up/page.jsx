@@ -3,15 +3,57 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    // এখানে তোমার registration logic যুক্ত করবে।
-    alert("Sign up authentication এখনো যুক্ত করা হয়নি।");
+    setErrorMessage("");
+    setSuccessMessage("");
+    setLoading(true);
+
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+
+      const data = Object.fromEntries(formData.entries());
+
+      const { data: resData, error } =
+        await authClient.signUp.email({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        });
+
+      if (error) {
+        setErrorMessage(
+          error.message || "Account creation failed."
+        );
+        return;
+      }
+
+      setSuccessMessage("Account created successfully!");
+      console.log("Sign Up Successful:", resData);
+
+      form.reset();
+      setShowPassword(false);
+    } catch (error) {
+      console.error("Sign Up Error:", error);
+
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -44,6 +86,24 @@ export default function SignUpPage() {
               নতুন অ্যাকাউন্ট তৈরি করে বাজারদর সম্পর্কে জানুন।
             </p>
           </div>
+
+          {errorMessage && (
+            <p
+              role="alert"
+              className="mb-5 rounded-xl bg-red-50 p-3 text-sm text-red-700"
+            >
+              {errorMessage}
+            </p>
+          )}
+
+          {successMessage && (
+            <p
+              role="status"
+              className="mb-5 rounded-xl bg-green-50 p-3 text-sm text-green-700"
+            >
+              {successMessage}
+            </p>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -106,7 +166,9 @@ export default function SignUpPage() {
 
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() =>
+                    setShowPassword((prev) => !prev)
+                  }
                   className="absolute inset-y-0 right-4 text-sm font-medium text-gray-500 hover:text-green-700"
                 >
                   {showPassword ? "Hide" : "Show"}
@@ -120,9 +182,10 @@ export default function SignUpPage() {
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white transition hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              disabled={loading}
+              className="w-full rounded-xl bg-green-700 px-4 py-3 font-semibold text-white transition hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              Create account <span aria-hidden="true">→</span>
+              {loading ? "Creating account..." : "Create account →"}
             </button>
           </form>
 

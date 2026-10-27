@@ -11,14 +11,14 @@ import PriceUp from "@/components/PriceUp";
 function SectionLoading() {
   return (
     <div className="flex justify-center py-8">
-      <span className="loading loading-spinner loading-md" />
+      <span className="loading loading-spinner loading-md text-emerald-600" />
     </div>
   );
 }
 
 export default function Home() {
   return (
-    <main>
+    <main className="min-h-screen">
       <Suspense fallback={<SectionLoading />}>
         <Groceries />
       </Suspense>
