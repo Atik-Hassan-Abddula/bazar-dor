@@ -1,8 +1,9 @@
 
+import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse } from "next/server";
 
 export function proxy(request) {
-  const sessionToken = request.cookies.get(
+  const sessionToken = getSessionCookie(request)||request.cookies.get(
     "better-auth.session_token"
   )?.value;
 console.log(sessionToken)
