@@ -131,7 +131,6 @@ function translateProductName(product) {
 
 function translateUnit(value) {
   const unit = String(value ?? "").trim();
-
   return unitTranslations[unit] ?? unit;
 }
 
@@ -145,7 +144,6 @@ function getPrice(product) {
     0;
 
   const price = Number(value);
-
   return Number.isFinite(price) ? price : 0;
 }
 
@@ -159,6 +157,7 @@ export default function ProductSorting({ products = [] }) {
 
   const sortedProducts = useMemo(() => {
     const list = Array.isArray(products) ? [...products] : [];
+    const query = search.trim().toLowerCase();
 
     const filtered = list.filter((product) => {
       const englishName = translateProductName(product).toLowerCase();
@@ -167,16 +166,12 @@ export default function ProductSorting({ products = [] }) {
         product?.nameBn ??
           product?.name ??
           product?.productName ??
+          product?.productNameBn ??
           product?.title ??
           ""
       ).toLowerCase();
 
-      const query = search.trim().toLowerCase();
-
-      return (
-        englishName.includes(query) ||
-        originalName.includes(query)
-      );
+      return englishName.includes(query) || originalName.includes(query);
     });
 
     if (sort === "low-high") {
@@ -185,9 +180,7 @@ export default function ProductSorting({ products = [] }) {
       filtered.sort((a, b) => getPrice(b) - getPrice(a));
     } else if (sort === "name") {
       filtered.sort((a, b) =>
-        translateProductName(a).localeCompare(
-          translateProductName(b)
-        )
+        translateProductName(a).localeCompare(translateProductName(b))
       );
     }
 
@@ -195,33 +188,42 @@ export default function ProductSorting({ products = [] }) {
   }, [products, search, sort]);
 
   return (
-    <section>
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">
-            Products
-          </h2>
-
-          <p className="mt-1 text-sm text-gray-500">
-            {sortedProducts.length} products found
-          </p>
+    <section className="w-full min-w-0">
+      {/* Responsive heading and controls */}
+      <div className="mb-6 flex flex-col gap-4">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
+              Products
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              {sortedProducts.length} products found
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search products..."
-            aria-label="Search products"
-            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 outline-none focus:border-green-600 sm:w-64"
-          />
+        {/* Search and sorting */}
+        <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_220px]">
+          <div className="relative min-w-0">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              🔍
+            </span>
+
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search products..."
+              aria-label="Search products"
+              className="w-full min-w-0 rounded-xl border border-gray-300 bg-white py-3 pl-10 pr-4 text-base text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-2 focus:ring-green-100"
+            />
+          </div>
 
           <select
             value={sort}
             onChange={(event) => setSort(event.target.value)}
             aria-label="Sort products"
-            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 outline-none focus:border-green-600"
+            className="w-full min-w-0 cursor-pointer rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100"
           >
             <option value="default">Default sorting</option>
             <option value="low-high">Price: Low to High</option>
@@ -231,23 +233,44 @@ export default function ProductSorting({ products = [] }) {
         </div>
       </div>
 
+      {/* Empty state */}
       {sortedProducts.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-10 text-center">
+        <div className="rounded-2xl border border-gray-200 bg-white px-4 py-12 text-center sm:px-8">
+          <div className="mb-3 text-4xl" aria-hidden="true">
+            🔎
+          </div>
           <p className="text-lg font-semibold text-gray-800">
             No products found
           </p>
-
           <p className="mt-2 text-sm text-gray-500">
             Try another search term.
           </p>
+          {search && (
+            <button
+              type="button"
+              onClick={() => setSearch("")}
+              className="mt-4 rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-800"
+            >
+              Clear search
+            </button>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        /* Responsive product grid */
+        <div className="grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
           {sortedProducts.map((product, index) => {
             const name = translateProductName(product);
             const image = getImage(product);
             const unit = translateUnit(product?.unit);
             const price = getPrice(product);
+            const yesterday =
+              product?.yesterday != null ? Number(product.yesterday) : null;
+            const changePct =
+              product?.change?.pct != null
+                ? Number(product.change.pct)
+                : null;
+
+            const changeDir = product?.change?.dir;
 
             return (
               <article
@@ -257,11 +280,11 @@ export default function ProductSorting({ products = [] }) {
                   product?.slug ??
                   `${name}-${index}`
                 }
-                className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+                className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="flex h-48 items-center justify-center overflow-hidden bg-gray-50 p-4">
+                <div className="flex h-36 items-center justify-center overflow-hidden bg-gray-50 p-4 sm:h-44 lg:h-48">
                   <span
-                    className="text-7xl transition-transform duration-300 group-hover:scale-110"
+                    className="break-words text-6xl transition-transform duration-300 group-hover:scale-110 sm:text-7xl"
                     role="img"
                     aria-label={name}
                   >
@@ -269,8 +292,8 @@ export default function ProductSorting({ products = [] }) {
                   </span>
                 </div>
 
-                <div className="p-4">
-                  <h3 className="min-h-12 text-lg font-semibold text-gray-900">
+                <div className="flex flex-1 flex-col p-4">
+                  <h3 className="min-h-12 break-words text-base font-semibold leading-6 text-gray-900 sm:text-lg">
                     {name}
                   </h3>
 
@@ -280,8 +303,8 @@ export default function ProductSorting({ products = [] }) {
                     </p>
                   )}
 
-                  <div className="mt-4 flex items-center justify-between gap-2">
-                    <p className="text-lg font-bold text-green-700">
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+                    <p className="break-words text-lg font-bold text-green-700">
                       ৳{price.toLocaleString("en-BD")}
                       {unit && (
                         <span className="text-xs font-normal text-gray-500">
@@ -290,36 +313,36 @@ export default function ProductSorting({ products = [] }) {
                       )}
                     </p>
 
-                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
+                    <span className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
                       Price Today
                     </span>
                   </div>
 
-                  {product?.yesterday != null && (
+                  {yesterday !== null && Number.isFinite(yesterday) && (
                     <p className="mt-2 text-sm text-gray-500">
-                      Yesterday: ৳
-                      {Number(product.yesterday).toLocaleString("en-BD")}
+                      Yesterday: ৳{yesterday.toLocaleString("en-BD")}
                     </p>
                   )}
 
-                  {product?.change?.pct != null && (
+                  {changePct !== null && Number.isFinite(changePct) && (
                     <p
                       className={`mt-1 text-sm font-medium ${
-                        product.change.dir === "up"
+                        changeDir === "up"
                           ? "text-red-600"
-                          : product.change.dir === "down"
+                          : changeDir === "down"
                             ? "text-green-600"
                             : "text-gray-500"
                       }`}
                     >
-                      {product.change.dir === "up" ? "▲" : ""}
-                      {product.change.dir === "down" ? "▼" : ""}
-                      {" "}
-                      {Math.abs(Number(product.change.pct))}%
-                      {" "}
-                      {product.change.dir === "up"
+                      {changeDir === "up"
+                        ? "▲ "
+                        : changeDir === "down"
+                          ? "▼ "
+                          : ""}
+                      {Math.abs(changePct)}%{" "}
+                      {changeDir === "up"
                         ? "increase"
-                        : product.change.dir === "down"
+                        : changeDir === "down"
                           ? "decrease"
                           : "change"}
                     </p>
