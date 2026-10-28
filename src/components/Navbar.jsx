@@ -47,8 +47,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
-      {/* Main Navbar */}
-      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-5 lg:px-6">
+      <nav className="mx-auto flex w-full max-w-7xl items-center gap-2 px-3 py-3 sm:gap-4 sm:px-5 lg:px-6">
         {/* Logo */}
         <Link
           href="/"
@@ -74,47 +73,24 @@ export default function Navbar() {
             </p>
 
             <p className="mt-0.5 text-[9px] leading-tight text-gray-500 sm:text-xs">
-              {date}
+              {date || "\u00A0"}
             </p>
           </div>
         </Link>
-
-        {/* Desktop Navigation: Laptop/Desktop Only */}
-        <div className="hidden items-center gap-1 lg:flex xl:gap-2">
-          {navLinks.map((link) => {
-            const active = pathname === link.href;
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={active ? "page" : undefined}
-                className={`whitespace-nowrap rounded-lg px-2 py-2 text-sm font-semibold transition xl:px-3 ${
-                  active
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "text-gray-700 hover:bg-emerald-50 hover:text-emerald-700"
-                }`}
-              >
-                <span className="mr-1">{link.icon}</span>
-                {link.name}
-              </Link>
-            );
-          })}
-        </div>
 
         {/* Authentication Buttons: Always Outside Menu */}
         <div className="ml-auto flex shrink-0 items-center">
           <AuthButton />
         </div>
 
-        {/* Hamburger: Mobile and Tablet Only */}
+        {/* Hamburger: Mobile Only */}
         <button
           type="button"
           onClick={() => setMenuOpen((previous) => !previous)}
-          aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           aria-controls="mobile-navigation"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-700 transition hover:bg-emerald-50 hover:text-emerald-700 focus-visible:outline-2 focus-visible:outline-emerald-600 sm:h-10 sm:w-10 lg:hidden"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-gray-700 transition hover:bg-emerald-50 hover:text-emerald-700 focus-visible:outline-2 focus-visible:outline-emerald-600 sm:hidden"
         >
           {menuOpen ? (
             <svg
@@ -153,21 +129,24 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile/Tablet Dropdown Navigation */}
+      {/* Navigation Links: Mobile Only */}
       {menuOpen && (
         <div
           id="mobile-navigation"
-          className="border-t border-gray-100 bg-white px-3 py-3 shadow-md lg:hidden sm:px-5"
+          className="border-t border-gray-100 bg-white px-3 py-3 shadow-md sm:hidden"
         >
           <div className="mx-auto flex w-full max-w-7xl flex-col gap-2">
             {navLinks.map((link) => {
-              const active = pathname === link.href;
+              const active =
+                pathname === link.href ||
+                pathname.startsWith(`${link.href}/`);
 
               return (
                 <Link
                   key={link.href}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
+                  onClick={() => setMenuOpen(false)}
                   className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-semibold transition ${
                     active
                       ? "border-emerald-200 bg-emerald-50 text-emerald-700"

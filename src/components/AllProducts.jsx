@@ -1,5 +1,8 @@
+
+"use client";
+
 import Link from "next/link";
-import { connection } from "next/server";
+import { useEffect, useState } from "react";
 
 const API_URL =
   "https://api.api-store.workers.dev/api/bazardor/products";
@@ -107,21 +110,10 @@ function translateName(name) {
 }
 
 function getProducts(data) {
-  if (Array.isArray(data)) {
-    return data;
-  }
-
-  if (Array.isArray(data?.data)) {
-    return data.data;
-  }
-
-  if (Array.isArray(data?.data?.products)) {
-    return data.data.products;
-  }
-
-  if (Array.isArray(data?.products)) {
-    return data.products;
-  }
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data?.products)) return data.data.products;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.products)) return data.products;
 
   return [];
 }
@@ -163,41 +155,56 @@ function getCategoryName(product) {
   return translateName(category ?? "Essential Goods");
 }
 
-async function fetchProducts() {
-  await connection();
+export default function AllProducts() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
-  const response = await fetch(API_URL, {
-    cache: "no-store",
-  });
+  useEffect(() => {
+    const controller = new AbortController();
 
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch products: ${response.status}`
-    );
-  }
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        setHasError(false);
 
-  const data = await response.json();
+        const response = await fetch(API_URL, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
 
-  return getProducts(data);
-}
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch products: ${response.status}`
+          );
+        }
 
-export default async function AllProducts() {
-  let products = [];
-  let hasError = false;
+        const data = await response.json();
 
-  try {
-    products = await fetchProducts();
-  } catch (error) {
-    hasError = true;
-    console.error("AllProducts API Error:", error);
-  }
+        setProducts(getProducts(data));
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error("AllProducts API Error:", error);
+          setHasError(true);
+          setProducts([]);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProducts();
+
+    return () => controller.abort();
+  }, []);
 
   return (
     <section
       id="সব-পণ্য"
       className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 py-10 sm:px-6 lg:px-8"
     >
-      {/* Section Heading */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="mb-1 text-sm font-semibold uppercase tracking-wider text-emerald-600">
@@ -218,8 +225,18 @@ export default async function AllProducts() {
         </span>
       </div>
 
-      {/* Product Cards */}
-      {products.length > 0 ? (
+      {loading ? (
+        <div className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-12 text-center">
+          <div
+            className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-emerald-100 border-t-emerald-600"
+            role="status"
+            aria-label="Loading products"
+          />
+          <p className="mt-4 text-sm text-gray-500">
+            Loading products...
+          </p>
+        </div>
+      ) : products.length > 0 ? (
         <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product, index) => {
             const isUp = product.change?.dir === "up";
@@ -244,8 +261,7 @@ export default async function AllProducts() {
 
             const icon =
               product.categoryIcon ||
-              (typeof product.image === "string" &&
-              !imageUrl
+              (typeof product.image === "string" && !imageUrl
                 ? product.image
                 : "🛒");
 
@@ -256,7 +272,6 @@ export default async function AllProducts() {
 
             const cardContent = (
               <article className="flex h-full min-h-[245px] flex-col rounded-2xl border border-gray-200 bg-white p-4 transition duration-200 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-900/5">
-                {/* Product Name and Price Change */}
                 <div className="flex flex-1 items-start justify-between gap-3">
                   <div className="flex min-w-0 items-start gap-3">
                     {imageUrl ? (
@@ -301,7 +316,6 @@ export default async function AllProducts() {
                   </span>
                 </div>
 
-                {/* Product Prices */}
                 <div className="mt-5 border-t border-gray-100 pt-4">
                   <p className="text-xs font-medium text-gray-500">
                     Today's Market Price
@@ -341,7 +355,7 @@ export default async function AllProducts() {
 
             return (
               <Link
-                key={product.id ?? product.slug ?? product._id ?? index}
+                key={String(productId)}
                 href={`/products/${encodeURIComponent(String(productId))}`}
                 aria-label={`View full details for ${productName}`}
                 className="block h-full rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-600"
