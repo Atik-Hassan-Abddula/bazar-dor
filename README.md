@@ -1,114 +1,186 @@
-# 🛒 বাজার দর | BazarDor
+# 🛒 BazarDor — বাজার দর
 
-**প্রয়োজনীয় পণ্যের দাম এক নজরে।**
+### Daily Essential Market Price Tracker
 
-BazarDor is a responsive price-tracking web application that helps users explore daily prices of essential grocery products across different markets in Bangladesh. Users can compare prices, track price changes, browse categories, and view market-wise product details.
+BazarDor is a modern and responsive web application designed to help people in Bangladesh explore the prices of essential daily commodities. Users can browse products, compare price trends, explore categories, and view market-wise pricing information through a clean and user-friendly interface.
 
-## 🌟 Key Features
+> **বাজার দর — প্রয়োজনীয় পণ্যের দাম এক নজরে।**
 
-### 1. 🏠 Home Page & Product Listings
-- Responsive navbar with logo, Bangla date, category navigation, and authentication buttons.
-- Live-style scrolling price ticker showing product names, prices, and percentage changes.
-- Hero banner with a call-to-action that scrolls to the All Products section.
-- Dedicated sections for the top 6 products with increasing and decreasing prices.
-- Responsive product grid with product names, emojis, units, prices, and price-change badges.
+---
 
-### 2. 📊 Product Details & Market Comparison
-- Protected product detail pages at `/product/[slug]`.
-- Minimum, maximum, and average price summaries.
-- Market-wise price comparisons for individual products.
-- Product category, unit, description, and current price information.
+## 📌 Table of Contents
 
-### 3. 🗂️ Category Browsing & Sorting
-- Dedicated category pages with category icons and titles.
-- Sort products by default order, lowest price, or highest price.
-- Numeric sorting that correctly handles Bengali numerals.
-- Loading skeletons and user-friendly empty states.
-- Custom 404 pages with a link back to the home page.
+- [About the Project](#-about-the-project)
+- [Features](#-features)
+- [Technology Stack](#-technology-stack)
+- [Application Routes](#-application-routes)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Environment Variables](#-environment-variables)
+- [Run Locally](#-run-locally)
+- [Deployment](#-deployment)
+- [Price Disclaimer](#-price-disclaimer)
+- [Project Links](#-project-links)
 
-### 4. 🔐 Authentication & Profile Management
-- Email and password authentication using Better Auth.
-- Google and GitHub social login.
-- Sign-up, sign-in, sign-out, and protected routes.
-- Toast notifications for successful actions and errors.
-- Profile page with an option to update user information.
+## 📖 About the Project
 
-### 5. 📱 Responsive UI & User Experience
-- Mobile-first layouts for phones, tablets, and desktops.
-- Responsive navigation, product cards, hero banner, and footer.
-- Loading skeletons while product data is fetched.
-- Friendly error messages and invalid-route handling.
-- Consistent styling with Tailwind CSS and DaisyUI.
+BazarDor aims to make everyday market-price information easier to access. The application organizes essential commodities into categories and highlights price increases and decreases so users can understand price movements more easily.
 
-## 🛠️ Technologies Used
+The project uses Next.js App Router and a product API to organize and display commodity information. Authentication features are handled through Better Auth where configured.
+
+## ✨ Features
+
+- 📈 **Price Trend Tracking** — View products with increased or decreased prices.
+- 🛍️ **Product Catalogue** — Browse essential commodities in a responsive grid.
+- 🗂️ **Category Navigation** — Explore products by category.
+- ↕️ **Price Sorting** — Sort products by price where supported.
+- 🔎 **Product Details** — View product information, units, price summaries, and market-wise prices when available.
+- 🔐 **Authentication** — Sign-in and registration using configured authentication providers.
+- 👤 **Profile Management** — Manage account information where implemented.
+- 🔔 **Toast Notifications** — Display feedback for user actions where configured.
+- ⏳ **Loading States** — Improve the browsing experience with loading indicators.
+- 📱 **Responsive Design** — Support mobile, tablet, and desktop screens.
+- 🚫 **Error Handling** — Provide appropriate not-found and error interfaces.
+
+## 🧰 Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Next.js | React framework and application routing |
-| React | Component-based user interface |
-| JavaScript / TypeScript | Application logic |
-| Tailwind CSS | Responsive styling |
-| DaisyUI | UI components |
-| Better Auth | Authentication and user management |
-| MongoDB | User data storage, if configured |
-| React Hot Toast | Toast notifications |
-| Vercel | Deployment and hosting |
-| News / Product API | Fetching application data |
+| Next.js | React framework and routing |
+| React | User interface |
+| JavaScript | Application logic |
+| Tailwind CSS | Styling and responsive layouts |
+| Better Auth | Authentication |
+| MongoDB | Database, if configured |
+| React Hot Toast | Notifications, if installed |
+| Vercel | Deployment |
 
-> Update this list to match the packages and services actually used in your project.
+## 🗺️ Application Routes
 
-## 🚀 Getting Started
+| Route | File Name | Description |
+|---|---|---|
+| `/` | `src/app/page.js` | Homepage and product catalogue |
+| `/price-up` | `src/app/price-up/page.js` | Products with increased prices |
+| `/price-down` | `src/app/price-down/page.js` | Products with decreased prices |
+| `/category/[slug]` | `src/app/category/[slug]/page.js` | Category-specific products |
+| `/product/[slug]` | `src/app/product/[slug]/page.js` | Product details |
+| `/signin` | `src/app/signin/page.js` | User sign-in |
+| `/signup` | `src/app/signup/page.js` | User registration |
+| `/profile` | `src/app/profile/page.js` | User profile management |
+
+*Only include routes that exist in the actual project. Dynamic routes use square brackets in their folder names.*
+
+## 📁 Project Structure
+
+```text
+bazar-dor/
+├── public/
+│   ├── logo-icon.png
+│   └── images/
+│
+├── src/
+│   ├── app/
+│   │   ├── layout.js
+│   │   ├── page.js
+│   │   ├── globals.css
+│   │   ├── loading.js
+│   │   ├── not-found.js
+│   │   │
+│   │   ├── price-up/
+│   │   │   └── page.js
+│   │   │
+│   │   ├── price-down/
+│   │   │   └── page.js
+│   │   │
+│   │   ├── category/
+│   │   │   └── [slug]/
+│   │   │       └── page.js
+│   │   │
+│   │   ├── product/
+│   │   │   └── [slug]/
+│   │   │       └── page.js
+│   │   │
+│   │   ├── signin/
+│   │   │   └── page.js
+│   │   │
+│   │   ├── signup/
+│   │   │   └── page.js
+│   │   │
+│   │   └── profile/
+│   │       └── page.js
+│   │
+│   ├── components/
+│   │   ├── Navbar.jsx
+│   │   ├── Hero.jsx
+│   │   ├── Marquee.jsx
+│   │   ├── Groceries.jsx
+│   │   ├── PriceUp.jsx
+│   │   ├── PriceDown.jsx
+│   │   ├── ProductCard.jsx
+│   │   └── Footer.jsx
+│   │
+│   └── lib/
+│       └── auth.js
+│
+├── .env.local
+├── .gitignore
+├── package.json
+├── package-lock.json
+├── next.config.js
+├── postcss.config.mjs
+├── eslint.config.mjs
+└── README.md
+```
+
+**Important:** This is an example structure, not a verified listing of every file in your repository. Keep only the folders and files that actually exist in your project.
+
+## ⚙️ Getting Started
 
 ### Prerequisites
 
 Make sure you have installed:
 
-- Node.js (LTS recommended)
+- Node.js (LTS version recommended)
 - npm
 - Git
-- A code editor such as Visual Studio Code
 
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/Atik-Hassan-Abddula/bazar-dor.git
 ```
 
-### 2. Open the Project
+### 2. Navigate to the project
 
 ```bash
 cd bazar-dor
 ```
 
-### 3. Install Dependencies
+### 3. Install dependencies
 
 ```bash
 npm install
 ```
 
-### 4. Configure Environment Variables
+## 🔑 Environment Variables
 
-Create a `.env.local` file in the project root and add the environment variables required by your implementation.
+Create a `.env.local` file in the project root and configure the environment variables required by your application.
 
 Example:
 
 ```env
-MONGO_DB_URL=your_mongodb_connection_string
-BETTER_AUTH_SECRET=your_secure_random_secret
+BETTER_AUTH_SECRET=your_secure_secret
 BETTER_AUTH_URL=http://localhost:3000
-
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
+MONGO_DB_URL=your_database_connection_string
 ```
 
-Configure the Google and GitHub OAuth callback URLs in their respective developer consoles. Make sure the environment variable names match your Better Auth configuration.
+Use the exact variable names expected by your application's authentication and database configuration. Add OAuth credentials if Google or GitHub sign-in is configured.
 
-**Security:** Never commit `.env.local`, database credentials, OAuth secrets, or authentication secrets to GitHub.
+**Security:** Never commit `.env.local`, database connection strings, authentication secrets, or OAuth client secrets to GitHub.
 
-### 5. Run the Development Server
+## ▶️ Run Locally
+
+Start the development server:
 
 ```bash
 npm run dev
@@ -116,69 +188,43 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 6. Build for Production
+### Production Build
 
 ```bash
 npm run build
+npm run start
 ```
 
-If the build completes successfully, start the production server with:
+## 🚀 Deployment
 
-```bash
-npm start
-```
-
-## 📁 Main Routes
-
-| Route | Description |
-|---|---|
-| `/` | Home page and product listings |
-| `/category/[slug]` | Products filtered by category |
-| `/product/[slug]` | Product details and market prices |
-| `/signin` | User login |
-| `/signup` | User registration |
-| `/profile` | User profile |
-| `/profile/update` | Update user information |
-| `/not-found` | Optional custom not-found route |
-
-The actual route paths should match your implementation. Next.js also supports a global `not-found.jsx` file for displaying a custom 404 page.
-
-## 📦 Deployment
-
-This project can be deployed on [Vercel](https://vercel.com/).
+BazarDor can be deployed on [Vercel](https://vercel.com/).
 
 1. Push the project to GitHub.
 2. Import the repository into Vercel.
-3. Configure all required environment variables in the Vercel project settings.
-4. Configure production OAuth callback URLs.
-5. Deploy the project.
-6. Test page refreshes, authentication, dynamic product routes, and category routes on the deployed website.
+3. Configure the required environment variables in the Vercel project settings.
+4. Deploy the application.
+5. Test the deployed routes, API requests, and authentication flows.
 
-## 📌 Important Notes
+## 📊 Price Disclaimer
 
-- Product prices are indicative and may change depending on market conditions.
-- Product data depends on the configured API.
-- Protected pages must verify the user's authenticated session on the server.
-- Google and GitHub login require valid OAuth credentials.
-- Dynamic routes should handle invalid slugs gracefully.
-- Keep secrets in environment variables, not in source code.
+Commodity prices can change depending on market, location, seller, and date. Prices displayed by BazarDor should be treated as informational and verified locally before making purchasing decisions.
 
-## 👨‍💻 Project Information
+## 🌐 Project Links
 
-**Project Name:** বাজার দর (BazarDor)
+- **GitHub Repository:** [BazarDor on GitHub](https://github.com/Atik-Hassan-Abddula/bazar-dor)
+- **Live Website:** Add your final deployed Vercel URL here.
 
-**Purpose:** Make essential product prices easier to explore and compare.
+## 📝 Project Goals
 
-**Developer:** [Your Name]
-
-**Live Link:** [Add Your Deployed Website URL]
-
-**GitHub Repository:** [Add Your GitHub Repository URL]
+- Make essential commodity prices easier to explore.
+- Present price changes in a clear and accessible format.
+- Improve the user experience through responsive design.
+- Practice modern web development using Next.js, React, APIs, and authentication.
 
 ---
 
-### বাংলা সংক্ষিপ্ত পরিচিতি
-
-বাজার দর একটি responsive web application, যার মাধ্যমে বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের দাম, বাজারভিত্তিক মূল্য, দাম বৃদ্ধি ও হ্রাস এবং বিভিন্ন পণ্যের category সহজেই দেখা যায়। ব্যবহারকারীরা authentication-এর মাধ্যমে লগইন করে পণ্যের বিস্তারিত তথ্য দেখতে এবং নিজের profile update করতে পারেন।
-
-**বাজার দর — প্রয়োজনীয় পণ্যের দাম এক নজরে।**
+<p align="center">
+  <strong>🛒 BazarDor — বাজার দর</strong>
+  <br />
+  Essential market prices, made easier to explore.
+</p>
