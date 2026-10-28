@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Hero() {
@@ -68,10 +69,12 @@ export default function Hero() {
 
           <div className="relative rounded-3xl border border-white/80 bg-white/80 p-3 shadow-2xl shadow-emerald-950/10 backdrop-blur sm:p-4">
             <div className="overflow-hidden rounded-2xl bg-emerald-50">
-              <img
+              <Image
                 src="/bazar-hero.png"
                 alt="Fresh groceries and essential market products"
                 fetchPriority="high"
+                height={350}
+                width={350}
                 className="aspect-[5/4] w-full object-cover transition-transform duration-700 hover:scale-105 sm:aspect-[4/3] md:aspect-[5/4] lg:aspect-[4/3]"
               />
             </div>

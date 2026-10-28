@@ -3,16 +3,16 @@ import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse } from "next/server";
 
 export function proxy(request) {
-  const sessionToken = getSessionCookie(request)||request.cookies.get(
-    "better-auth.session_token"
-  )?.value;
-console.log(sessionToken)
+  const sessionToken =
+    getSessionCookie(request) ||
+    request.cookies.get("better-auth.session_token")?.value;
+
   if (!sessionToken) {
     const signInUrl = new URL("/sign-in", request.url);
 
     signInUrl.searchParams.set(
       "callbackURL",
-      request.nextUrl.pathname + request.nextUrl.search
+      `${request.nextUrl.pathname}${request.nextUrl.search}`
     );
 
     return NextResponse.redirect(signInUrl);
@@ -22,8 +22,5 @@ console.log(sessionToken)
 }
 
 export const config = {
-  matcher: [
-    "/products/:path*",
-    "/category/:path*",
-  ],
+  matcher: ["/products/:path*", "/category/:path*"],
 };
