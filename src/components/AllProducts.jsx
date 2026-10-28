@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { connection } from "next/server";
 
@@ -97,7 +96,7 @@ const englishNames = {
   "হিমায়িত খাবার": "Frozen Food",
 };
 
-const translateName = (name) => {
+function translateName(name) {
   if (typeof name !== "string" || !name.trim()) {
     return "Product";
   }
@@ -105,55 +104,123 @@ const translateName = (name) => {
   const normalizedName = name.trim().replace(/\s+/g, " ");
 
   return englishNames[normalizedName] || normalizedName;
-};
+}
 
-const getProducts = (data) => {
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data;
+function getProducts(data) {
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  if (Array.isArray(data?.data)) {
+    return data.data;
+  }
+
   if (Array.isArray(data?.data?.products)) {
     return data.data.products;
   }
-  if (Array.isArray(data?.products)) return data.products;
+
+  if (Array.isArray(data?.products)) {
+    return data.products;
+  }
 
   return [];
-};
+}
 
-const AllProducts = async () => {
-  // Cache Components চালু থাকলে API request-কে
-  // prerendering-এর বাইরের dynamic request হিসেবে চালাবে।
+function formatPrice(price) {
+  if (
+    price === null ||
+    price === undefined ||
+    price === "" ||
+    !Number.isFinite(Number(price))
+  ) {
+    return "—";
+  }
+
+  return `৳${Number(price).toLocaleString("en-BD")}`;
+}
+
+function getProductName(product) {
+  return translateName(
+    product.name ??
+      product.nameBn ??
+      product.title ??
+      product.titleBn
+  );
+}
+
+function getCategoryName(product) {
+  const category =
+    product.categoryName ??
+    product.categoryNameBn ??
+    product.category?.name ??
+    product.category?.nameBn ??
+    product.category;
+
+  if (typeof category === "object" && category !== null) {
+    return translateName(category.name ?? category.nameBn);
+  }
+
+  return translateName(category ?? "Essential Goods");
+}
+
+async function fetchProducts() {
   await connection();
 
+  const response = await fetch(API_URL, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch products: ${response.status}`
+    );
+  }
+
+  const data = await response.json();
+
+  return getProducts(data);
+}
+
+export default async function AllProducts() {
   let products = [];
+  let hasError = false;
 
   try {
-    const res = await fetch(API_URL, {
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch products: ${res.status}`);
-    }
-
-    const data = await res.json();
-    products = getProducts(data);
+    products = await fetchProducts();
   } catch (error) {
+    hasError = true;
     console.error("AllProducts API Error:", error);
   }
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-8">
-      <div className="mb-5 flex min-h-10 items-center justify-between gap-3">
-        <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
-          🛒 All Products
-        </h2>
+    <section
+      id="সব-পণ্য"
+      className="mx-auto w-full max-w-7xl scroll-mt-24 px-4 py-10 sm:px-6 lg:px-8"
+    >
+      {/* Section Heading */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="mb-1 text-sm font-semibold uppercase tracking-wider text-emerald-600">
+            Explore Products
+          </p>
 
-        <span className="shrink-0 text-sm font-semibold text-gray-600">
+          <h2 className="text-2xl font-extrabold text-gray-900 sm:text-3xl">
+            🛒 All Products
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-500">
+            Check today's prices of essential products.
+          </p>
+        </div>
+
+        <span className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700">
           {products.length} Products
         </span>
       </div>
 
+      {/* Product Cards */}
       {products.length > 0 ? (
-        <div className="grid w-full grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {products.map((product, index) => {
             const isUp = product.change?.dir === "up";
             const isDown = product.change?.dir === "down";
@@ -161,124 +228,148 @@ const AllProducts = async () => {
             const productId =
               product.slug ?? product.id ?? product._id;
 
-            const productName = translateName(
-              product.name ??
-                product.nameBn ??
-                product.title ??
-                product.titleBn
+            const productName = getProductName(product);
+            const categoryName = getCategoryName(product);
+
+            const percentage = Number(product.change?.pct ?? 0);
+            const validPercentage = Number.isFinite(percentage)
+              ? Math.abs(percentage)
+              : 0;
+
+            const imageUrl =
+              typeof product.image === "string" &&
+              /^https?:\/\//i.test(product.image)
+                ? product.image
+                : null;
+
+            const icon =
+              product.categoryIcon ||
+              (typeof product.image === "string" &&
+              !imageUrl
+                ? product.image
+                : "🛒");
+
+            const hasProductId =
+              productId !== null &&
+              productId !== undefined &&
+              String(productId).length > 0;
+
+            const cardContent = (
+              <article className="flex h-full min-h-[245px] flex-col rounded-2xl border border-gray-200 bg-white p-4 transition duration-200 hover:-translate-y-1 hover:border-emerald-400 hover:shadow-lg hover:shadow-emerald-900/5">
+                {/* Product Name and Price Change */}
+                <div className="flex flex-1 items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
+                    {imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={imageUrl}
+                        alt={productName}
+                        loading="lazy"
+                        className="h-11 w-11 shrink-0 rounded-lg object-contain"
+                      />
+                    ) : (
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-2xl">
+                        {icon}
+                      </span>
+                    )}
+
+                    <div className="min-w-0">
+                      <h3 className="line-clamp-2 break-words font-bold text-gray-800">
+                        {productName}
+                      </h3>
+
+                      <p className="mt-1 line-clamp-1 text-xs text-gray-500">
+                        {categoryName}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span
+                    className={`shrink-0 rounded-lg px-2 py-1 text-xs font-bold ${
+                      isUp
+                        ? "bg-red-50 text-red-600"
+                        : isDown
+                          ? "bg-green-50 text-green-700"
+                          : "bg-gray-100 text-gray-500"
+                    }`}
+                  >
+                    {isUp
+                      ? `▲ ${validPercentage}%`
+                      : isDown
+                        ? `▼ ${validPercentage}%`
+                        : "—"}
+                  </span>
+                </div>
+
+                {/* Product Prices */}
+                <div className="mt-5 border-t border-gray-100 pt-4">
+                  <p className="text-xs font-medium text-gray-500">
+                    Today's Market Price
+                  </p>
+
+                  <div className="mt-1 flex flex-wrap items-baseline gap-2">
+                    <p className="text-2xl font-extrabold text-gray-900">
+                      {formatPrice(product.today)}
+                    </p>
+
+                    <span className="text-sm text-gray-500">
+                      / {product.unit || "kg"}
+                    </span>
+                  </div>
+
+                  <p className="mt-2 text-sm text-gray-500">
+                    Yesterday: {formatPrice(product.yesterday)}
+                  </p>
+
+                  <p className="mt-3 text-sm font-bold text-emerald-700">
+                    View Details <span aria-hidden="true">→</span>
+                  </p>
+                </div>
+              </article>
             );
 
-            const rawCategory =
-              product.categoryName ??
-              product.categoryNameBn ??
-              product.category?.name ??
-              product.category?.nameBn ??
-              product.category;
-
-            const categoryName = translateName(
-              typeof rawCategory === "object"
-                ? rawCategory?.name ?? rawCategory?.nameBn
-                : rawCategory ?? "Essential Goods"
-            );
+            if (!hasProductId) {
+              return (
+                <div
+                  key={`product-${index}`}
+                  className="h-full"
+                >
+                  {cardContent}
+                </div>
+              );
+            }
 
             return (
               <Link
                 key={product.id ?? product.slug ?? product._id ?? index}
                 href={`/products/${encodeURIComponent(String(productId))}`}
                 aria-label={`View full details for ${productName}`}
-                className="block h-full rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lime-600"
+                className="block h-full rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-600"
               >
-                <article className="flex h-[240px] w-full min-w-0 flex-col rounded-xl border border-gray-200 p-4 transition duration-200 hover:-translate-y-1 hover:border-lime-500">
-                  <div className="flex min-h-0 flex-1 items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-start gap-3">
-                      {product.image &&
-                      /^https?:\/\//i.test(String(product.image)) ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={product.image}
-                          alt={productName}
-                          className="h-10 w-10 shrink-0 object-contain"
-                        />
-                      ) : (
-                        <span className="shrink-0 text-3xl">
-                          {product.image || product.categoryIcon || "🛒"}
-                        </span>
-                      )}
-
-                      <div className="min-w-0">
-                        <h3 className="line-clamp-2 break-words font-bold text-gray-800">
-                          {productName}
-                        </h3>
-
-                        <p className="mt-1 line-clamp-2 text-xs text-gray-500">
-                          {categoryName}
-                        </p>
-                      </div>
-                    </div>
-
-                    {isUp && (
-                      <span className="shrink-0 rounded-lg px-2 py-1.5 text-sm font-bold text-red-600">
-                        ▲{" "}
-                        {Math.abs(Number(product.change?.pct ?? 0))}%
-                      </span>
-                    )}
-
-                    {isDown && (
-                      <span className="shrink-0 rounded-lg px-2 py-1.5 text-sm font-bold text-green-700">
-                        ▼{" "}
-                        {Math.abs(Number(product.change?.pct ?? 0))}%
-                      </span>
-                    )}
-
-                    {!isUp && !isDown && (
-                      <span className="shrink-0 text-sm font-bold text-gray-500">
-                        —
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mt-auto shrink-0 border-t border-gray-200 pt-3">
-                    <p className="text-sm text-gray-500">
-                      Today&apos;s Market Price
-                    </p>
-
-                    <div className="mt-1 flex flex-wrap items-baseline gap-2">
-                      <p className="text-2xl font-extrabold text-gray-900">
-                        {product.today !== null &&
-                        product.today !== undefined
-                          ? `৳${Number(product.today).toLocaleString("en-BD")}`
-                          : "—"}
-                      </p>
-
-                      <span className="text-sm text-gray-500">
-                        / {product.unit || "kg"}
-                      </span>
-                    </div>
-
-                    <p className="mt-2 text-sm text-gray-500">
-                      Yesterday:{" "}
-                      {product.yesterday !== null &&
-                      product.yesterday !== undefined
-                        ? `৳${Number(product.yesterday).toLocaleString("en-BD")}`
-                        : "—"}
-                    </p>
-
-                    <p className="mt-2 text-xs font-semibold text-gray-600">
-                      View Details →
-                    </p>
-                  </div>
-                </article>
+                {cardContent}
               </Link>
             );
           })}
         </div>
       ) : (
-        <p className="rounded-xl border border-gray-200 py-8 text-center text-gray-500">
-          No products found.
-        </p>
+        <div className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-12 text-center">
+          <p className="text-4xl">
+            {hasError ? "⚠️" : "🛒"}
+          </p>
+
+          <h3 className="mt-4 text-lg font-bold text-gray-800">
+            {hasError
+              ? "Unable to Load Products"
+              : "No Products Found"}
+          </h3>
+
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
+            {hasError
+              ? "We couldn't load the products right now. Please try again later."
+              : "There are currently no products available."}
+          </p>
+        </div>
       )}
     </section>
   );
-};
-
-export default AllProducts;
+}
