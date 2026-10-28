@@ -5,7 +5,7 @@ export function proxy(request) {
   const sessionToken = request.cookies.get(
     "better-auth.session_token"
   )?.value;
-
+console.log(sessionToken)
   if (!sessionToken) {
     const signInUrl = new URL("/sign-in", request.url);
 
