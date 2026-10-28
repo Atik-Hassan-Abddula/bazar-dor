@@ -1,5 +1,6 @@
 
 import Link from "next/link";
+import { connection } from "next/server";
 
 const API_URL =
   "https://api.api-store.workers.dev/api/bazardor/products";
@@ -18,19 +19,11 @@ const englishNames = {
   "মিনিকেট চাল": "Miniket Rice",
   "নাজির চাল": "Nazir Rice",
   "বাটাম সাইজ চাল": "Batam Size Rice",
-
-  // Lentils
   "আমন ডাল (খোসাসিলা)": "Aman Lentils (Peeled)",
-
-  // Oil
   "পাম তেল": "Palm Oil",
   "ঘানি ভাঙা সরিষার তেল": "Cold-Pressed Mustard Oil",
-
-  // Fish
   "তেলাপিয়া": "Tilapia",
   "চিংড়ি মাছ (খোলা)": "Loose Shrimp",
-
-  // Spices
   "মরিচ গুঁড়া": "Chili Powder",
   "ধনেপাতা গুঁড়া": "Coriander Leaf Powder",
   "আদা": "Ginger",
@@ -117,13 +110,19 @@ const translateName = (name) => {
 const getProducts = (data) => {
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.data)) return data.data;
-  if (Array.isArray(data?.data?.products)) return data.data.products;
+  if (Array.isArray(data?.data?.products)) {
+    return data.data.products;
+  }
   if (Array.isArray(data?.products)) return data.products;
 
   return [];
 };
 
 const AllProducts = async () => {
+  // Cache Components চালু থাকলে API request-কে
+  // prerendering-এর বাইরের dynamic request হিসেবে চালাবে।
+  await connection();
+
   let products = [];
 
   try {
@@ -132,7 +131,7 @@ const AllProducts = async () => {
     });
 
     if (!res.ok) {
-      throw new Error("Failed to fetch products");
+      throw new Error(`Failed to fetch products: ${res.status}`);
     }
 
     const data = await res.json();
@@ -143,7 +142,6 @@ const AllProducts = async () => {
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8">
-      {/* Section Heading */}
       <div className="mb-5 flex min-h-10 items-center justify-between gap-3">
         <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
           🛒 All Products
@@ -154,7 +152,6 @@ const AllProducts = async () => {
         </span>
       </div>
 
-      {/* Product Grid */}
       {products.length > 0 ? (
         <div className="grid w-full grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product, index) => {
@@ -192,7 +189,6 @@ const AllProducts = async () => {
                 className="block h-full rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-lime-600"
               >
                 <article className="flex h-[240px] w-full min-w-0 flex-col rounded-xl border border-gray-200 p-4 transition duration-200 hover:-translate-y-1 hover:border-lime-500">
-                  {/* Product Information */}
                   <div className="flex min-h-0 flex-1 items-start justify-between gap-3">
                     <div className="flex min-w-0 items-start gap-3">
                       {product.image &&
@@ -220,16 +216,17 @@ const AllProducts = async () => {
                       </div>
                     </div>
 
-                    {/* Price Change */}
                     {isUp && (
                       <span className="shrink-0 rounded-lg px-2 py-1.5 text-sm font-bold text-red-600">
-                        ▲ {Math.abs(Number(product.change?.pct ?? 0))}%
+                        ▲{" "}
+                        {Math.abs(Number(product.change?.pct ?? 0))}%
                       </span>
                     )}
 
                     {isDown && (
                       <span className="shrink-0 rounded-lg px-2 py-1.5 text-sm font-bold text-green-700">
-                        ▼ {Math.abs(Number(product.change?.pct ?? 0))}%
+                        ▼{" "}
+                        {Math.abs(Number(product.change?.pct ?? 0))}%
                       </span>
                     )}
 
@@ -240,7 +237,6 @@ const AllProducts = async () => {
                     )}
                   </div>
 
-                  {/* Product Price */}
                   <div className="mt-auto shrink-0 border-t border-gray-200 pt-3">
                     <p className="text-sm text-gray-500">
                       Today&apos;s Market Price

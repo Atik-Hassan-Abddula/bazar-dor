@@ -1,10 +1,12 @@
 
 import Link from "next/link";
 import { Suspense } from "react";
+import { connection } from "next/server";
 
 const API_URL =
   "https://api.api-store.workers.dev/api/bazardor/products";
 
+// Bengali product names → English
 const englishNames = {
   "স্বর্ণমাছি চাল": "Swarna Machi Rice",
   "মিনিকেট চাল": "Miniket Rice",
@@ -30,7 +32,7 @@ const englishNames = {
   "বেগুন": "Eggplant",
   "মরিচ": "Chili",
   "মরিচ গুঁড়া": "Chili Powder",
-  "ধনেপাতা গুঁড়া": "Coriander Leaf Powder",
+  "ধনেপাতা গুঁড়া": "Coriander Powder",
   "শসা": "Cucumber",
   "গাজর": "Carrot",
   "ফুলকপি": "Cauliflower",
@@ -82,8 +84,8 @@ const englishNames = {
   "ধনিয়া": "Coriander",
 };
 
+// Bengali categories → English
 const englishCategories = {
-  chal: "Rice",
   dal: "Lentils",
   tel: "Oil",
   sobji: "Vegetables",
@@ -125,16 +127,17 @@ const englishMarkets = {
 };
 
 const englishDivisions = {
-  "ঢাকা": "Dhaka",
-  "চট্টগ্রাম": "Chattogram",
-  "রাজশাহী": "Rajshahi",
-  "ময়মনসিংহ": "Mymensingh",
-  "খুলনা": "Khulna",
-  "সিলেট": "Sylhet",
-  "বরিশাল": "Barishal",
-  "রংপুর": "Rangpur",
+  ঢাকা: "Dhaka",
+  চট্টগ্রাম: "Chattogram",
+  রাজশাহী: "Rajshahi",
+  ময়মনসিংহ: "Mymensingh",
+  খুলনা: "Khulna",
+  সিলেট: "Sylhet",
+  বরিশাল: "Barishal",
+  রংপুর: "Rangpur",
 };
 
+// Translation helpers
 function translateName(name) {
   if (typeof name !== "string" || !name.trim()) {
     return "Product";
@@ -153,9 +156,11 @@ function translateCategory(category, categoryName) {
         ? category.trim()
         : "";
 
-  return englishCategories[category] ||
+  return (
+    englishCategories[category] ||
     englishCategories[value] ||
-    translateName(value || "Product");
+    translateName(value || "Product")
+  );
 }
 
 function translateMarket(market) {
@@ -166,6 +171,7 @@ function translateDivision(division) {
   return englishDivisions[division] || division || "—";
 }
 
+// Fetch product data
 async function getProduct(productId) {
   try {
     const response = await fetch(API_URL, {
@@ -173,6 +179,7 @@ async function getProduct(productId) {
     });
 
     if (!response.ok) {
+      console.error("Products API failed:", response.status);
       return null;
     }
 
@@ -201,6 +208,7 @@ async function getProduct(productId) {
   }
 }
 
+// Format price
 function formatPrice(price) {
   if (price === null || price === undefined || price === "") {
     return "—";
@@ -213,6 +221,7 @@ function formatPrice(price) {
     : `৳${value.toLocaleString("en-BD")}`;
 }
 
+// Read a price value from a market object
 function getMarketPrice(market, keys) {
   for (const key of keys) {
     if (
@@ -227,6 +236,7 @@ function getMarketPrice(market, keys) {
   return null;
 }
 
+// Price history card
 function PriceCard({ title, price, description }) {
   return (
     <div className="rounded-xl border border-gray-300 p-5 transition hover:border-lime-600">
@@ -236,11 +246,14 @@ function PriceCard({ title, price, description }) {
         {formatPrice(price)}
       </p>
 
-      <p className="mt-2 text-xs text-gray-500">{description}</p>
+      <p className="mt-2 text-xs text-gray-500">
+        {description}
+      </p>
     </div>
   );
 }
 
+// Loading screen
 function LoadingProduct() {
   return (
     <main className="flex min-h-[60vh] items-center justify-center px-4 text-gray-900">
@@ -259,6 +272,7 @@ function LoadingProduct() {
   );
 }
 
+// Not found screen
 function NotFoundProduct() {
   return (
     <main className="flex min-h-[60vh] items-center justify-center px-4 text-gray-900">
@@ -284,6 +298,7 @@ function NotFoundProduct() {
   );
 }
 
+// Product details content
 async function ProductContent({ params }) {
   const { productId } = await params;
   const product = await getProduct(productId);
@@ -293,7 +308,10 @@ async function ProductContent({ params }) {
   }
 
   const productName = translateName(
-    product.name ?? product.nameBn ?? product.title ?? product.titleBn
+    product.name ??
+      product.nameBn ??
+      product.title ??
+      product.titleBn
   );
 
   const categoryName = translateCategory(
@@ -363,14 +381,15 @@ async function ProductContent({ params }) {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
         <nav className="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-500">
-          <Link href="/" className="transition hover:text-lime-700">
+          <Link
+            href="/"
+            className="transition hover:text-lime-700"
+          >
             Home
           </Link>
 
           <span>/</span>
-
           <span>{categoryName}</span>
-
           <span>/</span>
 
           <span className="font-medium text-gray-900">
@@ -378,7 +397,7 @@ async function ProductContent({ params }) {
           </span>
         </nav>
 
-        {/* Product Information */}
+        {/* Product information */}
         <section className="grid gap-8 border-b border-gray-300 pb-10 lg:grid-cols-2 lg:items-center">
           <div>
             <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -396,8 +415,8 @@ async function ProductContent({ params }) {
             </h1>
 
             <p className="mt-4 max-w-xl text-sm leading-7 text-gray-500 sm:text-base">
-              Explore the current market price, historical prices, and
-              price comparisons across different markets.
+              Explore the current market price, historical prices,
+              and price comparisons across different markets.
             </p>
 
             <div className="mt-8">
@@ -442,7 +461,7 @@ async function ProductContent({ params }) {
             </div>
           </div>
 
-          {/* Product Image or Emoji */}
+          {/* Product image or emoji */}
           <div className="flex min-h-64 items-center justify-center">
             {product.image &&
             /^https?:\/\//i.test(String(product.image)) ? (
@@ -464,8 +483,11 @@ async function ProductContent({ params }) {
           </div>
         </section>
 
-        {/* Price History */}
-        <section id="price-history" className="scroll-mt-8 py-10">
+        {/* Price history */}
+        <section
+          id="price-history"
+          className="scroll-mt-8 py-10"
+        >
           <h2 className="text-2xl font-bold">Price History</h2>
 
           <p className="mt-2 text-sm text-gray-500">
@@ -484,7 +506,7 @@ async function ProductContent({ params }) {
           </div>
         </section>
 
-        {/* Price Change */}
+        {/* Price changes */}
         <section className="border-y border-gray-300 py-8">
           <h2 className="text-2xl font-bold">Price Changes</h2>
 
@@ -513,10 +535,10 @@ async function ProductContent({ params }) {
           </div>
         </section>
 
-        {/* Market Comparison */}
+        {/* Market comparison */}
         <section
           id="market-comparison"
-          className="scroll-mt-8 py-10 text-gray-900"
+          className="scroll-mt-8 py-10"
         >
           <h2 className="text-2xl font-bold">
             Market Price Comparison
@@ -655,10 +677,17 @@ async function ProductContent({ params }) {
   );
 }
 
+// Run request-time work inside the Suspense boundary
+async function ProductPageContent({ params }) {
+  await connection();
+
+  return <ProductContent params={params} />;
+}
+
 export default function ProductDetailsPage({ params }) {
   return (
     <Suspense fallback={<LoadingProduct />}>
-      <ProductContent params={params} />
+      <ProductPageContent params={params} />
     </Suspense>
   );
 }
