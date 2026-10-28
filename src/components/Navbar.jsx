@@ -9,9 +9,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
-  {
+ {
     name: "All Products",
-    href: "/products",
+    href: "/product",
     icon: "🛒",
   },
   {
