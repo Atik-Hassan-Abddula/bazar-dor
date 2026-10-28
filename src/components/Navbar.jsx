@@ -1,6 +1,7 @@
 
 "use client";
 
+
 import AuthButton from "@/components/AuthButton";
 import { useEffect, useState } from "react";
 import Image from "next/image";
