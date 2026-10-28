@@ -1,3 +1,4 @@
+
 import AllProducts from "@/components/AllProducts";
 
 export const metadata = {
